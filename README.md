@@ -1,4 +1,4 @@
-## AWS Lambda Critical CSS
+## Deferred loading
 ### WordPress plugin
 
 ### Description
