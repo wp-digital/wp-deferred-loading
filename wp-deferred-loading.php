@@ -41,7 +41,7 @@ function deferred_loading_is_script_deferred( $handle ) {
  * @return string
  */
 function deferred_loading_add_attr_defer( $tag, $handle, $src ) {
-    return !is_admin() && deferred_loading_is_script_deferred( $handle )
+    return !is_admin() && !is_customize_preview() && deferred_loading_is_script_deferred( $handle )
         ? str_replace( ' src', ' defer onload="' . deferred_loading_get_script_onload( $handle, $tag, $src ) . '" src', $tag )
         : $tag;
 }
