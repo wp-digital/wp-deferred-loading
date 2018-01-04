@@ -73,3 +73,50 @@ function deferred_loading_justify_jquery() {
 }
 
 add_action( 'wp_head', 'deferred_loading_falsify_jquery', 1 );
+
+/**
+ * @param string $handle
+ *
+ * @return bool
+ */
+function deferred_loading_is_style_deferred( $handle ) {
+    $handles = apply_filters( deferred_loading_key( 'styles' ), [] );
+
+    return $handles == '*' || in_array( $handle, $handles );
+}
+
+/**
+ * @return bool
+ */
+function deferred_loading_has_deferred_styles() {
+    global $wp_styles;
+
+    $handles = apply_filters( deferred_loading_key( 'styles' ), [] );
+
+    return $handles == '*' || count( array_intersect( $handles, array_keys( $wp_styles->registered ) ) ) > 0;
+}
+
+/**
+ * @param string $tag
+ * @param string $handle
+ *
+ * @return string
+ */
+function deferred_loading_add_attr_rel_preload( $tag, $handle ) {
+    return !is_admin() && !is_customize_preview() && deferred_loading_is_style_deferred( $handle )
+        ? str_replace( ' rel=\'stylesheet\'', ' rel=\'preload\' as=\'style\' onload=\'this.rel="stylesheet"\'', $tag ) . "<noscript>$tag</noscript>"
+        : $tag;
+}
+
+add_filter( 'style_loader_tag', 'deferred_loading_add_attr_rel_preload', 10, 2 );
+
+function deferred_loading_load_css_script() {
+    if ( deferred_loading_has_deferred_styles() ) : ?>
+        <script>
+            !function(e){"use strict";var n=function(n,t,o){function i(e){return a.body?e():void setTimeout(function(){i(e)})}function r(){l.addEventListener&&l.removeEventListener("load",r),l.media=o||"all"}var d,a=e.document,l=a.createElement("link");if(t)d=t;else{var s=(a.body||a.getElementsByTagName("head")[0]).childNodes;d=s[s.length-1]}var f=a.styleSheets;l.rel="stylesheet",l.href=n,l.media="only x",i(function(){d.parentNode.insertBefore(l,t?d:d.nextSibling)});var u=function(e){for(var n=l.href,t=f.length;t--;)if(f[t].href===n)return e();setTimeout(function(){u(e)})};return l.addEventListener&&l.addEventListener("load",r),l.onloadcssdefined=u,u(r),l};"undefined"!=typeof exports?exports.loadCSS=n:e.loadCSS=n}("undefined"!=typeof global?global:this);
+            !function(t){if(t.loadCSS){var e=loadCSS.relpreload={};if(e.support=function(){try{return t.document.createElement("link").relList.supports("preload")}catch(e){return!1}},e.poly=function(){for(var e=t.document.getElementsByTagName("link"),n=0;n<e.length;n++){var r=e[n];"preload"===r.rel&&"style"===r.getAttribute("as")&&(t.loadCSS(r.href,r),r.rel=null)}},!e.support()){e.poly();var n=t.setInterval(e.poly,300);t.addEventListener&&t.addEventListener("load",function(){t.clearInterval(n)}),t.attachEvent&&t.attachEvent("onload",function(){t.clearInterval(n)})}}}(this);
+        </script>
+    <?php endif;
+}
+
+add_filter( 'wp_head', 'deferred_loading_load_css_script', 99 );
