@@ -2,16 +2,16 @@
 /**
  * Plugin Name: Deferred loading
  * Description: Defer loading of JavaScript and CSS files.
- * Version: 0.0.3
+ * Version: 0.0.4
  * Author: Innocode
  * Author URI: https://innocode.com
  * Requires at least: 4.8
- * Tested up to: 4.8.3
+ * Tested up to: 4.9.2
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
-define( 'DEFERRED_LOADING_VERSION', '0.0.3' );
+define( 'DEFERRED_LOADING_VERSION', '0.0.4' );
 
 /**
  * @param string $key
@@ -93,7 +93,7 @@ function deferred_loading_has_deferred_styles() {
 
     $handles = apply_filters( deferred_loading_key( 'styles' ), [] );
 
-    return $handles == '*' || count( array_intersect( $handles, array_keys( $wp_styles->registered ) ) ) > 0;
+    return !empty( $handles ) && ( $handles == '*' || count( array_intersect( $handles, array_keys( $wp_styles->registered ) ) ) > 0 );
 }
 
 /**
