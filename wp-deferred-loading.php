@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Deferred loading
  * Description: Defer loading of JavaScript and CSS files.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Innocode
  * Author URI: https://innocode.com
  * Requires at least: 4.8
@@ -11,7 +11,7 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-define( 'DEFERRED_LOADING_VERSION', '1.1.0' );
+define( 'DEFERRED_LOADING_VERSION', '1.1.1' );
 
 /**
  * Return prefixed and sanitized key
@@ -64,9 +64,11 @@ function deferred_loading_add_attr_defer( $tag, $handle, $src ) {
 function deferred_loading_get_script_onload( $handle, $tag, $src ) {
     global $wp_scripts;
 
-    return apply_filters( deferred_loading_key( 'script_onload' ), $wp_scripts->queue[ count( $wp_scripts->queue ) - 1 ] === $handle
-        ? deferred_loading_justify_jquery()
-        : '', $handle, $tag, $src );
+    return apply_filters( deferred_loading_key( 'script_onload' ),
+            deferred_loading_is_script_deferred( 'jquery-core' ) && $wp_scripts->queue[ count( $wp_scripts->queue ) - 1 ] === $handle
+                ? deferred_loading_justify_jquery()
+                : '',
+            $handle, $tag, $src );
 }
 
 add_filter( 'script_loader_tag', 'deferred_loading_add_attr_defer', 10, 3 );
