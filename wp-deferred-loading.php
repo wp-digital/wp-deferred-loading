@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Deferred loading
  * Description: Defer loading of JavaScript and CSS files.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Innocode
  * Author URI: https://innocode.com
  * Requires at least: 4.8
@@ -11,7 +11,7 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-define( 'DEFERRED_LOADING_VERSION', '1.1.1' );
+define( 'DEFERRED_LOADING_VERSION', '1.1.2' );
 
 /**
  * Return prefixed and sanitized key
