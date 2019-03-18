@@ -2,16 +2,16 @@
 /**
  * Plugin Name: Deferred loading
  * Description: Defer loading of JavaScript and CSS files.
- * Version: 1.1.6
+ * Version: 1.1.7
  * Author: Innocode
  * Author URI: https://innocode.com
  * Requires at least: 4.8
- * Tested up to: 5.0.0
+ * Tested up to: 5.1.1
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-define( 'DEFERRED_LOADING_VERSION', '1.1.6' );
+define( 'DEFERRED_LOADING_VERSION', '1.1.7' );
 
 /**
  * Return prefixed and sanitized key
@@ -66,9 +66,11 @@ function deferred_loading_get_script_onload( $handle, $tag, $src ) {
     $queue = $wp_scripts->queue;
 
     return apply_filters( deferred_loading_key( 'script_onload' ),
-        deferred_loading_is_script_deferred( 'jquery-core' ) && end( $queue ) === $handle
-            ? deferred_loading_justify_jquery()
-            : '',
+        wp_script_is( 'jquery' )
+            && deferred_loading_is_script_deferred( 'jquery-core' )
+            && end( $queue ) === $handle
+                ? deferred_loading_justify_jquery()
+                : '',
         $handle, $tag, $src );
 
 }
@@ -79,10 +81,10 @@ add_filter( 'script_loader_tag', 'deferred_loading_add_attr_defer', 10, 3 );
  * Print falsify jQuery script
  */
 function deferred_loading_falsify_jquery() {
-    if ( deferred_loading_is_script_deferred( 'jquery-core' ) ) : ?>
-        <script>
-            !function(a,b,c){var d,e;a.bindReadyQ=[],a.bindLoadQ=[],e=function(b,c){switch(b){case"load":a.bindLoadQ.push(c);break;case"ready":a.bindReadyQ.push(c);break;default:a.bindReadyQ.push(b)}},d={load:e,ready:e,bind:e,on:e},a.$=a.jQuery=function(f){return f===b||f===c||f===a?d:void e(f)}}(window,document);
-        </script>
+    if ( wp_script_is( 'jquery' ) && deferred_loading_is_script_deferred( 'jquery-core' ) ) : ?>
+<script>
+!function(a,b,c){var d,e;a.bindReadyQ=[],a.bindLoadQ=[],e=function(b,c){switch(b){case"load":a.bindLoadQ.push(c);break;case"ready":a.bindReadyQ.push(c);break;default:a.bindReadyQ.push(b)}},d={load:e,ready:e,bind:e,on:e},a.$=a.jQuery=function(f){return f===b||f===c||f===a?d:void e(f)}}(window,document);
+</script>
     <?php endif;
 }
 
@@ -144,10 +146,10 @@ add_filter( 'style_loader_tag', 'deferred_loading_add_attr_rel_preload', 10, 2 )
  */
 function deferred_loading_load_css_script() {
     if ( deferred_loading_has_deferred_styles() ) : ?>
-        <script>
-            !function(e){"use strict";var n=function(n,t,o){function i(e){return a.body?e():void setTimeout(function(){i(e)})}function r(){l.addEventListener&&l.removeEventListener("load",r),l.media=o||"all"}var d,a=e.document,l=a.createElement("link");if(t)d=t;else{var s=(a.body||a.getElementsByTagName("head")[0]).childNodes;d=s[s.length-1]}var f=a.styleSheets;l.rel="stylesheet",l.href=n,l.media="only x",i(function(){d.parentNode.insertBefore(l,t?d:d.nextSibling)});var u=function(e){for(var n=l.href,t=f.length;t--;)if(f[t].href===n)return e();setTimeout(function(){u(e)})};return l.addEventListener&&l.addEventListener("load",r),l.onloadcssdefined=u,u(r),l};"undefined"!=typeof exports?exports.loadCSS=n:e.loadCSS=n}("undefined"!=typeof global?global:this);
-            !function(t){if(t.loadCSS){var e=loadCSS.relpreload={};if(e.support=function(){try{return t.document.createElement("link").relList.supports("preload")}catch(e){return!1}},e.poly=function(){for(var e=t.document.getElementsByTagName("link"),n=0;n<e.length;n++){var r=e[n];"preload"===r.rel&&"style"===r.getAttribute("as")&&(t.loadCSS(r.href,r),r.rel=null)}},!e.support()){e.poly();var n=t.setInterval(e.poly,300);t.addEventListener&&t.addEventListener("load",function(){t.clearInterval(n)}),t.attachEvent&&t.attachEvent("onload",function(){t.clearInterval(n)})}}}(this);
-        </script>
+<script>
+!function(e){"use strict";var n=function(n,t,o){function i(e){return a.body?e():void setTimeout(function(){i(e)})}function r(){l.addEventListener&&l.removeEventListener("load",r),l.media=o||"all"}var d,a=e.document,l=a.createElement("link");if(t)d=t;else{var s=(a.body||a.getElementsByTagName("head")[0]).childNodes;d=s[s.length-1]}var f=a.styleSheets;l.rel="stylesheet",l.href=n,l.media="only x",i(function(){d.parentNode.insertBefore(l,t?d:d.nextSibling)});var u=function(e){for(var n=l.href,t=f.length;t--;)if(f[t].href===n)return e();setTimeout(function(){u(e)})};return l.addEventListener&&l.addEventListener("load",r),l.onloadcssdefined=u,u(r),l};"undefined"!=typeof exports?exports.loadCSS=n:e.loadCSS=n}("undefined"!=typeof global?global:this);
+!function(t){if(t.loadCSS){var e=loadCSS.relpreload={};if(e.support=function(){try{return t.document.createElement("link").relList.supports("preload")}catch(e){return!1}},e.poly=function(){for(var e=t.document.getElementsByTagName("link"),n=0;n<e.length;n++){var r=e[n];"preload"===r.rel&&"style"===r.getAttribute("as")&&(t.loadCSS(r.href,r),r.rel=null)}},!e.support()){e.poly();var n=t.setInterval(e.poly,300);t.addEventListener&&t.addEventListener("load",function(){t.clearInterval(n)}),t.attachEvent&&t.attachEvent("onload",function(){t.clearInterval(n)})}}}(this);
+</script>
     <?php endif;
 }
 
