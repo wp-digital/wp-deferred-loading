@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Deferred loading
  * Description: Defer loading of JavaScript and CSS files.
- * Version: 1.3.0
+ * Version: 1.4.0
  * Author: Innocode
  * Author URI: https://innocode.com
  * Requires at least: 4.8
