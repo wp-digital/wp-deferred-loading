@@ -78,7 +78,7 @@ function falsify_jquery() {
  * @return string
  */
 function justify_jquery() {
-    return '!function(a,b){b.isArray(a.bindReadyQ)&&b.each(a.bindReadyQ,function(d,i){b(i)}),b.isArray(a.bindLoadQ)&&b.each(a.bindLoadQ,function(d,i){b(a).on(\'load\',i)})}(window,jQuery);';
+    return '!function(a,b){b.isArray(a.bindReadyQ)&&b.each(a.bindReadyQ,function(d,i){b(i)}),b.isArray(a.bindLoadQ)&&b.each(a.bindLoadQ,function(d,i){b(a).on("load",i)})}(window,jQuery);';
 }
 
 add_action( 'wp_head', __NAMESPACE__ . '\falsify_jquery', 1 );
