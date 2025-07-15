@@ -20,16 +20,6 @@ use Brain\Monkey;
 
 Monkey\setUp();
 
-global $wp_scripts;
-
-if (!isset($wp_scripts)) {
-    $wp_scripts = (object) [
-        'queue' => [
-            'jquery-core',
-        ],
-    ];
-}
-
 require_once "$libraryPath/src/deferred-loading.php";
 
 unset($libraryPath, $vendorPath);

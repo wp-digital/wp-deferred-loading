@@ -27,8 +27,8 @@ function is_script_deferred( $handle ) {
 function add_attr_defer( $tag, $handle, $src ) {
     return ! \is_admin() && ! \is_customize_preview() && is_script_deferred( $handle )
         ? preg_replace(
-            '/\ssrc=(["\'])' . preg_quote( $src, '/' ) . '\1/',
-            ' defer onload=$1' . get_script_onload( $handle, $tag, $src ) . "$1 src=$1$src$1",
+            '/\ssrc=(["\'])' . preg_quote( \esc_attr( $src ), '/' ) . '\1/',
+            ' defer onload=$1' . \esc_js( get_script_onload( $handle, $tag, $src ) ) . "$1 src=$1$src$1",
             $tag
         )
         : $tag;
@@ -126,7 +126,7 @@ function has_deferred_styles() {
 function add_attr_rel_preload( $tag, $handle, $href, $media ) {
     return ! \is_admin() && ! \is_customize_preview() && $media != 'print' && is_style_deferred( $handle )
         ? "\n" . preg_replace_callback(
-            "/\smedia=([\"'])($media)\\1/",
+            '/\smedia=(["\'])(' . \esc_attr( $media ) . ')\1/',
             function ($matches) {
                 $quote = $matches[1];
                 $media = $matches[2];
