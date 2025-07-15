@@ -27,7 +27,7 @@ function is_script_deferred( $handle ) {
 function add_attr_defer( $tag, $handle, $src ) {
     return ! \is_admin() && ! \is_customize_preview() && is_script_deferred( $handle )
         ? preg_replace(
-                '/\ssrc=(["\'])' . preg_quote( $src, '/' ) . '\1/',
+            '/\ssrc=(["\'])' . preg_quote( $src, '/' ) . '\1/',
             ' defer onload=$1' . get_script_onload( $handle, $tag, $src ) . "$1 src=$1$src$1",
             $tag
         )
