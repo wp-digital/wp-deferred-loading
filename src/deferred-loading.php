@@ -10,7 +10,7 @@ namespace Innocode\WPDeferredLoading;
  * @return bool
  */
 function is_script_deferred( $handle ) {
-    $handles = apply_filters( 'deferred_loading_scripts', [] );
+    $handles = \apply_filters( 'deferred_loading_scripts', [] );
 
     return $handles == '*' || in_array( $handle, $handles );
 }
@@ -25,10 +25,10 @@ function is_script_deferred( $handle ) {
  * @return string
  */
 function add_attr_defer( $tag, $handle, $src ) {
-    return ! is_admin() && ! is_customize_preview() && is_script_deferred( $handle )
-        ? str_replace(
-            " src='$src'",
-            ' defer onload=\'' . get_script_onload( $handle, $tag, $src ) . "' src='$src'",
+    return ! \is_admin() && ! \is_customize_preview() && is_script_deferred( $handle )
+        ? preg_replace(
+            '/\ssrc=(["\'])' . preg_quote( \esc_attr( $src ), '/' ) . '\1/',
+            ' defer onload=$1' . \esc_js( get_script_onload( $handle, $tag, $src ) ) . "$1 src=$1$src$1",
             $tag
         )
         : $tag;
@@ -50,7 +50,7 @@ function get_script_onload( $handle, $tag, $src ) {
 
     return apply_filters(
         'deferred_loading_script_onload',
-        wp_script_is( 'jquery' ) && is_script_deferred( 'jquery-core' ) && end( $queue ) === $handle
+        \wp_script_is( 'jquery' ) && is_script_deferred( 'jquery-core' ) && end( $queue ) === $handle
             ? justify_jquery()
             : '',
         $handle,
@@ -59,13 +59,13 @@ function get_script_onload( $handle, $tag, $src ) {
     );
 }
 
-add_filter( 'script_loader_tag', __NAMESPACE__ . '\add_attr_defer', 10, 3 );
+\add_filter( 'script_loader_tag', __NAMESPACE__ . '\add_attr_defer', 10, 3 );
 
 /**
  * Prints falsify jQuery script
  */
 function falsify_jquery() {
-    if ( wp_script_is( 'jquery' ) && is_script_deferred( 'jquery-core' ) ) : ?>
+    if ( \wp_script_is( 'jquery' ) && is_script_deferred( 'jquery-core' ) ) : ?>
         <script>
           !function(a,b,c){var d,e;a.bindReadyQ=[],a.bindLoadQ=[],e=function(b,c){switch(b){case"load":a.bindLoadQ.push(c);break;case"ready":a.bindReadyQ.push(c);break;default:a.bindReadyQ.push(b)}},d={load:e,ready:e,bind:e,on:e},a.$=a.jQuery=function(f){return f===b||f===c||f===a?d:void e(f)}}(window,document);
         </script>
@@ -91,7 +91,7 @@ add_action( 'wp_head', __NAMESPACE__ . '\falsify_jquery', 1 );
  * @return bool
  */
 function is_style_deferred( $handle ) {
-    $handles = apply_filters( 'deferred_loading_styles', [] );
+    $handles = \apply_filters( 'deferred_loading_styles', [] );
 
     return $handles == '*' || in_array( $handle, $handles );
 }
@@ -104,7 +104,7 @@ function is_style_deferred( $handle ) {
 function has_deferred_styles() {
     global $wp_styles;
 
-    $handles = apply_filters( 'deferred_loading_styles', [] );
+    $handles = \apply_filters( 'deferred_loading_styles', [] );
 
     return ! empty( $handles ) &&
         (
@@ -124,13 +124,19 @@ function has_deferred_styles() {
  * @return string
  */
 function add_attr_rel_preload( $tag, $handle, $href, $media ) {
-    return ! is_admin() && ! is_customize_preview() && $media != 'print' && is_style_deferred( $handle )
-        ? str_replace(
-                " media='$media'",
-                " media='print' onload='this.media=\"$media\";this.onload=null;'",
-                $tag
-        ) . "<noscript>\n$tag</noscript>\n"
+    return ! \is_admin() && ! \is_customize_preview() && $media != 'print' && is_style_deferred( $handle )
+        ? "\n" . preg_replace_callback(
+            '/\smedia=(["\'])(' . \esc_attr( $media ) . ')\1/',
+            function ($matches) {
+                $quote = $matches[1];
+                $media = $matches[2];
+                $opposite_quote = $quote === '"' ? "'" : '"';
+
+                return " media={$quote}print$quote onload={$quote}this.media=$opposite_quote$media$opposite_quote;this.onload=null;$quote";
+            },
+            $tag
+        ) . "\n<noscript>\n$tag\n</noscript>\n"
         : $tag;
 }
 
-add_filter( 'style_loader_tag', __NAMESPACE__ . '\add_attr_rel_preload', 10, 4 );
+\add_filter( 'style_loader_tag', __NAMESPACE__ . '\add_attr_rel_preload', 10, 4 );
